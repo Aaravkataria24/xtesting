@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --neon-blue: #00f7ff;
+  --neon-purple: #bc13fe;
+}
+
+body {
+  @apply antialiased text-gray-100;
+  background: linear-gradient(to bottom, #000000, #0a0a0a);
+}
+
+.neon-glow {
+  box-shadow: 0 0 10px var(--neon-blue),
+              0 0 20px var(--neon-purple);
+}
+
+.tweet-card {
+  @apply bg-gray-900 rounded-xl p-4 border border-gray-800 hover:border-gray-700 transition-all duration-200;
+}
