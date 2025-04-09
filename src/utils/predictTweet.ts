@@ -14,7 +14,7 @@ export type SplitTestResult = {
 export const predictSingleTweet = async (
   tweet: string
 ): Promise<PredictionResult> => {
-  const response = await fetch('http://127.0.0.1:8000/predict/single', {
+  const response = await fetch('https://xtesting-api.onrender.com/predict/single', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,7 +41,7 @@ export const predictSplitTest = async (
   tweet1: string,
   tweet2: string
 ): Promise<SplitTestResult> => {
-  const response = await fetch('http://127.0.0.1:8000/predict/split', {
+  const response = await fetch('https://xtesting-api.onrender.com/predict/split', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
