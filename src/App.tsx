@@ -2,13 +2,19 @@ import { useState } from 'react';
 import { TweetInput } from './components/TweetInput';
 import { MetricsDisplay } from './components/MetricsDisplay';
 import { predictSingleTweet, predictSplitTest } from './utils/predictTweet';
-import { PredictionResult, Tweet, TweetMetrics } from './types';
+import { Tweet, TweetMetrics } from './types';
+
+type CombinedPrediction = {
+  tweet1: TweetMetrics;
+  tweet2?: TweetMetrics;
+  winner: 1 | 2;
+};
 
 function App() {
   const [mode, setMode] = useState<'single' | 'split'>('split');
   const [tweet1, setTweet1] = useState<Tweet>({ content: '', metrics: {} as TweetMetrics });
   const [tweet2, setTweet2] = useState<Tweet>({ content: '', metrics: {} as TweetMetrics });
-  const [prediction, setPrediction] = useState<PredictionResult | null>(null);
+  const [prediction, setPrediction] = useState<CombinedPrediction | null>(null);
 
   const handlePredict = async () => {
     try {
@@ -25,7 +31,6 @@ function App() {
         setTweet1({ ...tweet1, metrics: metrics1 });
         setPrediction({
           tweet1: metrics1,
-          tweet2: {} as TweetMetrics,
           winner: 1,
         });
       } else {
@@ -142,7 +147,7 @@ function App() {
               metrics={prediction.tweet1}
               isWinner={prediction.winner === 1}
             />
-            {mode === 'split' && (
+            {mode === 'split' && prediction.tweet2 && (
               <MetricsDisplay
                 metrics={prediction.tweet2}
                 isWinner={prediction.winner === 2}
