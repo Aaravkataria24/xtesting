@@ -52,7 +52,7 @@ def predict_metrics(text):
         "engagement_score": engagement_score
     }
 
-@app.post("/predict")
+@app.post("/predict/single")
 def single_prediction(input: TweetInput):
     try:
         result = predict_metrics(input.text)
