@@ -56,7 +56,7 @@ def predict_metrics(text):
 def single_prediction(input: TweetInput):
     try:
         result = predict_metrics(input.text)
-        return result
+        return { "prediction": result }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
