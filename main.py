@@ -4,7 +4,6 @@ from pydantic import BaseModel
 import pickle
 import numpy as np
 import uvicorn
-from fastapi.middleware.cors import CORSMiddleware 
 
 # Load vectorizer and models
 with open("tfidf_vectorizer.pkl", "rb") as f:
@@ -21,17 +20,19 @@ with open("replies_model.pkl", "rb") as f:
 
 app = FastAPI()
 
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",           # for local development
-        "https://xtester.netlify.app"      # for deployed frontend
+        "http://localhost:5173",           # local dev
+        "https://xtester.netlify.app"      # deployed frontend
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Request schemas
 class TweetInput(BaseModel):
     text: str
 
@@ -39,12 +40,19 @@ class SplitTestInput(BaseModel):
     tweet1: str
     tweet2: str
 
+# Prediction logic with logging
 def predict_metrics(text):
+    print(f"\n🔍 Predicting for tweet: {text}")
     X = vectorizer.transform([text])
+    print(f"✅ TF-IDF vector shape: {X.shape}")
+
     likes = int(likes_model.predict(X)[0])
     retweets = int(retweets_model.predict(X)[0])
     replies = int(replies_model.predict(X)[0])
     engagement_score = likes + retweets + replies
+
+    print(f"✅ Predicted - Likes: {likes}, Retweets: {retweets}, Replies: {replies}, Engagement Score: {engagement_score}")
+
     return {
         "likes": likes,
         "retweets": retweets,
@@ -52,14 +60,17 @@ def predict_metrics(text):
         "engagement_score": engagement_score
     }
 
+# Single tweet prediction route
 @app.post("/predict/single")
 def single_prediction(input: TweetInput):
     try:
         result = predict_metrics(input.text)
         return { "prediction": result }
     except Exception as e:
+        print(f"❌ Error in single_prediction: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# Split test prediction route
 @app.post("/predict/split")
 def split_test(input: SplitTestInput):
     try:
@@ -74,8 +85,9 @@ def split_test(input: SplitTestInput):
             "better_tweet": winner
         }
     except Exception as e:
+        print(f"❌ Error in split_test: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-# For local testing
+# Local testing
 if __name__ == "__main__":
-    uvicorn.run("api:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
