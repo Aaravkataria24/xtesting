@@ -12,6 +12,6 @@ export interface TweetMetrics {
 
 export interface PredictionResult {
   tweet1: TweetMetrics;
-  tweet2: TweetMetrics;
+  tweet2?: TweetMetrics;
   winner: 1 | 2;
 }

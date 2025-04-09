@@ -29,11 +29,26 @@ function App() {
           engagementScore: result.engagementScore ?? 0,
         };
 
-        setTweet1({ content: inputContent, metrics: metrics1 });
+        const updatedTweet1 = { content: inputContent, metrics: metrics1 };
+        setTweet1(updatedTweet1);
         setPrediction({
           tweet1: metrics1,
           winner: 1,
         });
+
+        // Save to localStorage (optional for single mode)
+        const saved = JSON.parse(localStorage.getItem('predictions') || '[]');
+        localStorage.setItem(
+          'predictions',
+          JSON.stringify([
+            {
+              tweet1: updatedTweet1,
+              result: { metrics1 },
+              timestamp: Date.now(),
+            },
+            ...saved,
+          ])
+        );
       } else {
         const input1 = tweet1.content;
         const input2 = tweet2.content;
@@ -56,20 +71,28 @@ function App() {
 
         const winner = result.winner === 'tweet1' ? 1 : 2;
 
-        setTweet1({ content: input1, metrics: metrics1 });
-        setTweet2({ content: input2, metrics: metrics2 });
+        const updatedTweet1 = { content: input1, metrics: metrics1 };
+        const updatedTweet2 = { content: input2, metrics: metrics2 };
+
+        setTweet1(updatedTweet1);
+        setTweet2(updatedTweet2);
         setPrediction({
           tweet1: metrics1,
           tweet2: metrics2,
           winner,
         });
 
-        const savedPredictions = JSON.parse(localStorage.getItem('predictions') || '[]');
+        const saved = JSON.parse(localStorage.getItem('predictions') || '[]');
         localStorage.setItem(
           'predictions',
           JSON.stringify([
-            { tweet1, tweet2, result: { metrics1, metrics2, winner }, timestamp: Date.now() },
-            ...savedPredictions,
+            {
+              tweet1: updatedTweet1,
+              tweet2: updatedTweet2,
+              result: { metrics1, metrics2, winner },
+              timestamp: Date.now(),
+            },
+            ...saved,
           ])
         );
       }
@@ -85,9 +108,7 @@ function App() {
           <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-neon-blue to-neon-purple bg-clip-text text-transparent">
             TweetLab
           </h1>
-          <p className="text-gray-400">
-            Predict your tweet's performance before posting
-          </p>
+          <p className="text-gray-400">Predict your tweet's performance before posting</p>
         </header>
 
         <div className="mb-8">
@@ -95,9 +116,7 @@ function App() {
             <button
               onClick={() => setMode('single')}
               className={`px-6 py-2 rounded-full ${
-                mode === 'single'
-                  ? 'bg-neon-blue/20 text-neon-blue'
-                  : 'bg-gray-800 text-gray-400'
+                mode === 'single' ? 'bg-neon-blue/20 text-neon-blue' : 'bg-gray-800 text-gray-400'
               }`}
             >
               Single Tweet
@@ -105,9 +124,7 @@ function App() {
             <button
               onClick={() => setMode('split')}
               className={`px-6 py-2 rounded-full ${
-                mode === 'split'
-                  ? 'bg-neon-purple/20 text-neon-purple'
-                  : 'bg-gray-800 text-gray-400'
+                mode === 'split' ? 'bg-neon-purple/20 text-neon-purple' : 'bg-gray-800 text-gray-400'
               }`}
             >
               Split Test
@@ -146,15 +163,9 @@ function App() {
 
         {prediction && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-            <MetricsDisplay
-              metrics={prediction.tweet1}
-              isWinner={prediction.winner === 1}
-            />
+            <MetricsDisplay metrics={prediction.tweet1} isWinner={prediction.winner === 1} />
             {mode === 'split' && prediction.tweet2 && (
-              <MetricsDisplay
-                metrics={prediction.tweet2}
-                isWinner={prediction.winner === 2}
-              />
+              <MetricsDisplay metrics={prediction.tweet2} isWinner={prediction.winner === 2} />
             )}
           </div>
         )}

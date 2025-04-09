@@ -19,7 +19,6 @@ export const predictSingleTweet = async (
     headers: {
       'Content-Type': 'application/json',
     },
-    // FIXED: FastAPI expects "text", not "tweet"
     body: JSON.stringify({ text: tweet }),
   });
 
@@ -27,8 +26,9 @@ export const predictSingleTweet = async (
     throw new Error('Failed to predict tweet');
   }
 
+  // 🔥 FIX: Match FastAPI's return structure { prediction: { ... } }
   const data = await response.json();
-  const { likes, retweets, replies, engagement_score } = data;
+  const { likes, retweets, replies, engagement_score } = data.prediction;
 
   return {
     likes,
