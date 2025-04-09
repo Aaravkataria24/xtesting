@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { TweetInput } from './components/TweetInput';
 import { MetricsDisplay } from './components/MetricsDisplay';
 import { predictSingleTweet, predictSplitTest } from './utils/predictTweet';
