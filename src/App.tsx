@@ -19,7 +19,8 @@ function App() {
   const handlePredict = async () => {
     try {
       if (mode === 'single') {
-        const result = await predictSingleTweet(tweet1.content);
+        const inputContent = tweet1.content;
+        const result = await predictSingleTweet(inputContent);
 
         const metrics1: TweetMetrics = {
           likes: result.likes ?? 0,
@@ -28,13 +29,16 @@ function App() {
           engagementScore: result.engagementScore ?? 0,
         };
 
-        setTweet1({ ...tweet1, metrics: metrics1 });
+        setTweet1({ content: inputContent, metrics: metrics1 });
         setPrediction({
           tweet1: metrics1,
           winner: 1,
         });
       } else {
-        const result = await predictSplitTest(tweet1.content, tweet2.content);
+        const input1 = tweet1.content;
+        const input2 = tweet2.content;
+
+        const result = await predictSplitTest(input1, input2);
 
         const metrics1: TweetMetrics = {
           likes: result.prediction1?.likes ?? 0,
@@ -52,15 +56,14 @@ function App() {
 
         const winner = result.winner === 'tweet1' ? 1 : 2;
 
-        setTweet1({ ...tweet1, metrics: metrics1 });
-        setTweet2({ ...tweet2, metrics: metrics2 });
+        setTweet1({ content: input1, metrics: metrics1 });
+        setTweet2({ content: input2, metrics: metrics2 });
         setPrediction({
           tweet1: metrics1,
           tweet2: metrics2,
           winner,
         });
 
-        // Save to localStorage
         const savedPredictions = JSON.parse(localStorage.getItem('predictions') || '[]');
         localStorage.setItem(
           'predictions',
