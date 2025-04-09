@@ -25,7 +25,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",           # local dev
-        "https://xtester.netlify.app"      # deployed frontend
+        "https://xtester.netlify.app",      # deployed frontend
+        "https://xtesting.aaravkataria.com", # my website
     ],
     allow_credentials=True,
     allow_methods=["*"],
